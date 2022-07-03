@@ -1,6 +1,13 @@
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'java'
     id 'io.quarkus'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 repositories {
@@ -10,18 +17,46 @@ repositories {
 
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-config-yaml'
     implementation 'io.quarkus:quarkus-hibernate-orm'
-    implementation 'io.quarkus:quarkus-flyway'
-    implementation 'io.quarkus:quarkus-jdbc-mariadb'
+
+    /**
+     * flyway
+     */
+    implementation "io.quarkus:quarkus-flyway"
+    implementation "org.flywaydb:flyway-sqlserver"
+    implementation "org.flywaydb:flyway-mysql"
+    implementation "io.quarkus:quarkus-jdbc-mariadb"
+
     implementation 'io.quarkus:quarkus-spring-data-rest'
     implementation 'io.quarkus:quarkus-spring-di'
     implementation 'io.quarkus:quarkus-spring-web'
     implementation 'io.quarkus:quarkus-spring-data-jpa'
     implementation 'io.quarkus:quarkus-spring-boot-properties'
+
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
+
+    /**
+     * querydsl
+     */
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    /**
+     * lombok
+     */
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    /**
+     * assertj
+     */
+    testImplementation "org.assertj:assertj-core:3.20.2"
 }
 
 group 'com.remember'
@@ -39,4 +74,27 @@ compileJava {
 
 compileTestJava {
     options.encoding = 'UTF-8'
+}
+
+// querydsl에서 사용할 경로 설정
+def querydslDir = "$buildDir/generated/querydsl"
+// JPA 사용 여부와 사용할 경로를 설정
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+// build 시 사용할 sourceSet 추가
+sourceSets {
+    main.java.srcDir querydslDir
+}
+// querydsl 컴파일시 사용할 옵션 설정
+compileQuerydsl{
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
 }
