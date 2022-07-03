@@ -1,0 +1,37 @@
+quarkus:
+  datasource:
+    db-kind: mariadb
+    jdbc:
+      url: jdbc:mariadb://${REMEMBER_MAIN_DB_HOST}:${REMEMBER_MAIN_DB_PORT}/${REMEMBER_MAIN_DB_NAME}?characterEncoding=UTF-8&serverTimezone=UTC
+    username: ${REMEMBER_MAIN_DB_USER}
+    password: ${REMEMBER_MAIN_DB_PASSWORD}
+  data:
+    rest:
+      detection-strategy: annotated
+      default-page-size: 20
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    generate-ddl: false
+
+  hibernate-orm:
+    physical-naming-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
+  flyway:
+#    enabled: true
+    migrate-at-start: true
+    baseline-on-migrate: true
+#    url: jdbc:mariadb://${REMEMBER_MAIN_DB_HOST}:${REMEMBER_MAIN_DB_PORT}/${REMEMBER_MAIN_DB_NAME}?characterEncoding=UTF-8&serverTimezone=UTC
+#    user: ${REMEMBER_MAIN_DB_USER}
+#    password: ${REMEMBER_MAIN_DB_PASSWORD}
+
+  # Security OAuth
+#  security:
+#    oauth2.client:
+#      registration:
+#        google:
+#          clientId: ${OAUTH2_GOOGLE_CLIENTID}
+#          clientSecret: ${OAUTH2_GOOGLE_CLIENTSECRET}
+#          scope:
+#            - email
+#            - profile
