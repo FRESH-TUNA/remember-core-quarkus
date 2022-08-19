@@ -1,4 +1,4 @@
-package com.remember.domains;
+package com.remember.domain;
 
 import java.util.List;
 
